@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+ 		<!-- 配置视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+   		<property name="prefix" value="/"></property>
+    	<property name="suffix" value=".jsp"></property>
+ 	</bean>
+ 	
+ 	<!-- 扫描包 -->
+	<context:component-scan base-package="S1118HelloWorld"></context:component-scan>
+	<context:component-scan base-package="S1119SpringMVCREST"></context:component-scan>
+	<context:component-scan base-package="S1120CURD"></context:component-scan>
+	<context:component-scan base-package="S1121DataOperate"></context:component-scan>
+	<context:component-scan base-package="S1123Exception"></context:component-scan>
+	<context:component-scan base-package="S2224Ajax"></context:component-scan>
+	<!-- 处理静态资源 -->
+	<mvc:default-servlet-handler/>	
+	 
+	 	<!-- 配置数据类型转换 -->
+ 	<bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+ 		<property name="converters">
+ 			<list>
+ 				<bean class="S1121DataOperate.S1DataConverter"></bean>
+ 			</list>
+ 		</property>
+ 	</bean>
+ 	<!-- 将类型转换器注册到springmvc上下文 -->
+ 	<mvc:annotation-driven conversion-service="conversionService"></mvc:annotation-driven>
+ 	
+	<!-- 数据格式化 -->
+	<mvc:annotation-driven />
+
+	<!-- 配置拦截器 -->
+	<mvc:interceptors>
+		<!-- 配置自定义拦截器，拦截所有请求 -->
+		<bean class="S1122Interceptor.S1HandlerInterceptor"></bean>
+		<!-- 自定义拦截器，拦截指定请求 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/dataOperate/dataValidate"/>
+			<bean class="S1122Interceptor.S2HandlerInterceptorAdapt"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	  <!-- 注册异常处理器类 -->
+		<!--<bean class="S1123Exception.S3HandlerExceptionResolver"></bean>-->
+		
+		<!-- 配置文件上传解析器 -->
+	<bean name="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<property name="maxUploadSize" value="10240000"></property>
+	</bean>
+</beans>
